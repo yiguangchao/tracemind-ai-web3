@@ -18,6 +18,18 @@ export function AiExplanation({ explanation }: AiExplanationProps) {
           <p className="mt-2 whitespace-pre-wrap">{explanation.riskTip}</p>
         </div>
         <div>
+          <h3 className="text-base font-semibold text-white">人工确认清单</h3>
+          <ul className="mt-2 space-y-2 text-slate-300">
+            {explanation.confirmationChecklist.length > 0 ? (
+              explanation.confirmationChecklist.map((item) => (
+                <li key={item} className="list-decimal pl-5">{item}</li>
+              ))
+            ) : (
+              <li className="list-decimal pl-5 text-slate-400">AI 未提供具体清单，建议人工确认交易目的与目标。</li>
+            )}
+          </ul>
+        </div>
+        <div>
           <h3 className="text-base font-semibold text-white">学习记录</h3>
           <p className="mt-2 whitespace-pre-wrap">{explanation.learningNotes}</p>
         </div>

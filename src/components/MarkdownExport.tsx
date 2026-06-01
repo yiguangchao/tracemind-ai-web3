@@ -19,7 +19,8 @@ export function MarkdownExport({ transaction, risk, explanation }: MarkdownExpor
     `- 风险等级：${risk.level}\n\n` +
     `## AI 解释\n${explanation.summary}\n\n` +
     `## 风险提示\n${explanation.riskTip}\n\n` +
-    `## 人工确认清单\n${risk.humanChecklist.map((item) => `- ${item}`).join('\n')}\n\n` +
+    `## 人工确认清单\n${explanation.confirmationChecklist.length > 0 ? explanation.confirmationChecklist.map((item) => `- ${item}`).join('\n') : 'AI 未提供具体清单，请人工确认交易目的与目标。'}\n\n` +
+    `## 自动化规则清单\n${risk.humanChecklist.map((item) => `- ${item}`).join('\n')}\n\n` +
     `## 我的理解\n${explanation.learningNotes}\n`;
 
   const copyToClipboard = async () => {
