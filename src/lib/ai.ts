@@ -69,20 +69,43 @@ function buildPrompt(transaction: TransactionSummary, risk: RiskResult) {
 - 风险等级：${risk.level}
 - 风险判断原因：${risk.reasons.join('；')}
 
-请输出：
-1. 这笔交易在做什么。
-2. 交易参与方说明。
-3. 是否涉及 ETH 转账。
-4. 是否是合约调用或部署。
-5. Gas 和交易状态解释。
-6. 对新手的重点提示。
-7. 风险点总结。
-8. 不确定项说明。
+请严格只返回一个 JSON 对象，且不要附加额外解释文本。JSON 对象必须包含以下字段：
+- summary: 简要摘要，说明交易在做什么
+- riskTip: 风险提示说明
+- confirmationChecklist: 人工确认清单，数组形式，每一项是一个字符串
+- learningNotes: 学习记录备注
 
-要求：以中文回答，分段清晰，避免编造合约名称或目的，不输出私钥、助记词或签名指引。`;
+示例格式：
+{
+  "summary": "...",
+  "riskTip": "...",
+  "confirmationChecklist": ["...", "..."],
+  "learningNotes": "..."
+}
+
+要求：
+- 仅返回 JSON，不要返回 Markdown 或额外说明。
+- 使用中文字段内容。
+- 不要输出私钥、助记词、签名或投资建议。
+`;
 }
 
 function parseAiResponse(message: string): AiExplanationResult {
+  const jsonText = extractJson(message);
+  if (jsonText) {
+    try {
+      const parsed = JSON.parse(jsonText);
+      return {
+        summary: String(parsed.summary ?? '未生成摘要。'),
+        riskTip: String(parsed.riskTip ?? '请参考交易风险，并谨慎操作。'),
+        confirmationChecklist: normalizeChecklist(parsed.confirmationChecklist),
+        learningNotes: String(parsed.learningNotes ?? '已生成学习记录。'),
+      };
+    } catch {
+      // Fall through to text fallback below.
+    }
+  }
+
   const lines = message.split(/\r?\n/).filter(Boolean);
   const summary = lines.slice(0, 5).join('\n');
   const riskTip = lines.slice(5, 8).join('\n') || '请参考上述风险提示并谨慎操作。';
@@ -94,4 +117,30 @@ function parseAiResponse(message: string): AiExplanationResult {
     confirmationChecklist: [],
     learningNotes,
   };
+}
+
+function extractJson(text: string): string | null {
+  const first = text.indexOf('{');
+  const last = text.lastIndexOf('}');
+  if (first === -1 || last === -1 || first > last) {
+    return null;
+  }
+  return text.slice(first, last + 1);
+}
+
+function normalizeChecklist(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item).trim())
+      .filter((item) => item.length > 0);
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n/)
+      .map((item) => item.replace(/^\s*[-*\d\.\)]+\s*/, '').trim())
+      .filter((item) => item.length > 0);
+  }
+
+  return [];
 }
