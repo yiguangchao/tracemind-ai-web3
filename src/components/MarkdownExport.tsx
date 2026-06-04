@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import type { AiExplanationResult, RiskResult, TransactionSummary } from '@/types/transaction';
 import { generateTransactionMarkdown } from '@/lib/markdown';
 
@@ -8,10 +11,13 @@ interface MarkdownExportProps {
 }
 
 export function MarkdownExport({ transaction, risk, explanation }: MarkdownExportProps) {
+  const [copied, setCopied] = useState(false);
   const markdown = generateTransactionMarkdown(transaction, risk, explanation);
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(markdown);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -26,7 +32,7 @@ export function MarkdownExport({ transaction, risk, explanation }: MarkdownExpor
           onClick={copyToClipboard}
           className="rounded-2xl bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400"
         >
-          复制 Markdown
+          {copied ? '已复制' : '复制 Markdown'}
         </button>
       </div>
       <pre className="mt-6 max-h-[22rem] overflow-auto rounded-3xl border border-slate-800 bg-slate-950 p-5 text-sm text-slate-200 scrollbar-thin">

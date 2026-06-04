@@ -5,7 +5,8 @@ AI Web3 Transaction Explainer 是一个面向 Web3 新手和 AI × Web3 学员�
 ## 主要功能
 
 - 支持输入交易哈希并查询 Sepolia / Base Sepolia 链上交易信息
-- 展示交易状态、发送方、接收方、ETH 值、Gas、区块高度、日志数量
+- 展示交易状态、发送方、接收方、ETH 值、Gas、区块高度、日志数量、合约地址与 input data
+- 提供区块浏览器链接，并支持复制交易哈希和地址
 - 通过 AI 生成中文解释和风险提示
 - 自动判断交易风险等级并给出人工确认清单
 - 生成可复制的 Markdown 学习记录
@@ -44,11 +45,28 @@ npm run dev
 
 5. 打开浏览器访问 `http://localhost:3000`
 
+## 使用方法
+
+1. 在首页选择测试网，例如 Sepolia 或 Base Sepolia。
+2. 输入 0x 开头的 66 位交易哈希。
+3. 点击“查询交易”，等待链上数据和 AI 解读返回。
+4. 查看交易概览、风险评估和人工确认清单。
+5. 复制 Markdown 学习记录，保存到 GitHub repo 或个人笔记。
+
+## 环境变量
+
+| 变量 | 说明 |
+|---|---|
+| `OPENAI_API_KEY` | 服务端调用 OpenAI API 使用 |
+| `OPENAI_MODEL` | AI 模型名，默认可使用 `gpt-4.1-mini` |
+| `SEPOLIA_RPC_URL` | Sepolia RPC URL |
+| `BASE_SEPOLIA_RPC_URL` | Base Sepolia RPC URL |
+
 ## 项目结构
 
 - `src/app`：页面与 API Routes
 - `src/components`：UI 组件
-- `src/lib`：链条配置、查询、AI 解释、风险判断
+- `src/lib`：链条配置、查询、AI 解释、风险判断、Markdown 生成
 - `src/types`：类型定义
 - `docs`：需求与技术设计文档
 - `prompts`：AI prompt 模板
@@ -57,4 +75,12 @@ npm run dev
 
 - 不读取、不存储、不上传私钥或助记词
 - AI API Key 仅在服务端环境变量使用
-- 只做链上数据解释，不执行转账或签名
+- 只做链上数据解释，不执行转账、签名或授权
+- AI 输出仅供学习参考，不构成投资建议或安全审计结论
+
+## 后续计划
+
+- 增加更多示例交易
+- 增加 ABI 输入与 input data 解码
+- 增加钱包连接，只用于展示当前地址
+- 增加本地历史记录和 PDF 导出

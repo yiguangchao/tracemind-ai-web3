@@ -1,9 +1,10 @@
 node_modules
 .next
 .out
+tsconfig.tsbuildinfo
 .env
 .DS_Store
-docs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+docs/

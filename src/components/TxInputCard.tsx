@@ -12,6 +12,18 @@ const defaultHash = '0x000000000000000000000000000000000000000000000000000000000
 export function TxInputCard({ loading, onFetch }: TxInputCardProps) {
   const [network, setNetwork] = useState('sepolia');
   const [hash, setHash] = useState('');
+  const [inputError, setInputError] = useState<string | null>(null);
+
+  const submit = () => {
+    const normalizedHash = hash.trim();
+    if (!/^0x[a-fA-F0-9]{64}$/.test(normalizedHash)) {
+      setInputError('请输入 0x 开头的 66 位交易哈希。');
+      return;
+    }
+
+    setInputError(null);
+    onFetch(network, normalizedHash);
+  };
 
   return (
     <section className="rounded-3xl border border-slate-800 bg-slate-900/90 p-8 shadow-soft">
@@ -46,10 +58,15 @@ export function TxInputCard({ loading, onFetch }: TxInputCardProps) {
           交易哈希
           <input
             value={hash}
-            onChange={(event) => setHash(event.target.value)}
+            onChange={(event) => {
+              setHash(event.target.value);
+              setInputError(null);
+            }}
             placeholder="0x..."
+            aria-invalid={Boolean(inputError)}
             className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-sky-400"
           />
+          {inputError ? <span className="mt-2 block text-sm text-red-300">{inputError}</span> : null}
         </label>
       </div>
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -58,7 +75,7 @@ export function TxInputCard({ loading, onFetch }: TxInputCardProps) {
           type="button"
           disabled={loading}
           className="inline-flex items-center justify-center rounded-2xl bg-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={() => onFetch(network, hash)}
+          onClick={submit}
         >
           {loading ? '查询中...' : '查询交易'}
         </button>

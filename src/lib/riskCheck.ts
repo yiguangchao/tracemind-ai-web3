@@ -8,7 +8,7 @@ export function calculateRisk(transaction: any, receipt: any): RiskResult {
   const hasValueTransfer = transaction.value && transaction.value !== 0n;
   const isContractCall = transaction.input && transaction.input !== '0x';
   const isContractDeployment = transaction.to == null && receipt?.contractAddress != null;
-  const isFailed = receipt?.status === 0;
+  const isFailed = receipt?.status === 'reverted';
   const hasLogs = Array.isArray(receipt?.logs) && receipt.logs.length > 0;
   const functionSelector = transaction.input?.slice(0, 10) ?? null;
   const isApprove = functionSelector === approveSelector;

@@ -16,11 +16,15 @@ export default function HomePage() {
   const [risk, setRisk] = useState<RiskResult | null>(initialRisk);
   const [explanation, setExplanation] = useState<AiExplanationResult | null>(initialExplanation);
   const [loading, setLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState<'transaction' | 'ai' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   const handleFetch = async (network: string, hash: string) => {
     setLoading(true);
+    setLoadingStage('transaction');
     setError(null);
+    setAiError(null);
     setTransaction(null);
     setRisk(null);
     setExplanation(null);
@@ -33,21 +37,27 @@ export default function HomePage() {
       }
       setTransaction(txData.transaction);
       setRisk(txData.risk);
+      setLoadingStage('ai');
 
-      const explainRes = await fetch('/api/explain', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transaction: txData.transaction, risk: txData.risk }),
-      });
-      const explainData = await explainRes.json();
-      if (!explainRes.ok) {
-        throw new Error(explainData.error || '调用 AI 失败');
+      try {
+        const explainRes = await fetch('/api/explain', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transaction: txData.transaction, risk: txData.risk }),
+        });
+        const explainData = await explainRes.json();
+        if (!explainRes.ok) {
+          throw new Error(explainData.error || '调用 AI 失败');
+        }
+        setExplanation(explainData.explanation);
+      } catch (aiRequestError) {
+        setAiError(aiRequestError instanceof Error ? aiRequestError.message : 'AI 解读暂不可用');
       }
-      setExplanation(explainData.explanation);
     } catch (err) {
       setError(err instanceof Error ? err.message : '未知错误');
     } finally {
       setLoading(false);
+      setLoadingStage(null);
     }
   };
 
@@ -63,8 +73,20 @@ export default function HomePage() {
 
         <TxInputCard onFetch={handleFetch} loading={loading} />
 
+        {loadingStage ? (
+          <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 text-sky-100">
+            {loadingStage === 'transaction' ? '正在查询链上数据...' : '链上数据已返回，正在生成 AI 解读...'}
+          </div>
+        ) : null}
+
         {error ? (
           <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-4 text-red-100">{error}</div>
+        ) : null}
+
+        {aiError ? (
+          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-100">
+            AI 解读暂不可用：{aiError}。链上交易数据和规则风险评估仍可正常查看。
+          </div>
         ) : null}
 
         {transaction ? (
