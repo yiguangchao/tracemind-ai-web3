@@ -45,6 +45,8 @@ npm run dev
 
 5. 打开浏览器访问 `http://localhost:3000`
 
+如果暂时没有配置 `OPENAI_API_KEY`，项目仍然可以查询链上交易、展示规则风险评估，并生成一份规则版 Markdown 学习记录。
+
 ## 使用方法
 
 1. 在首页选择测试网，例如 Sepolia 或 Base Sepolia。
@@ -52,6 +54,15 @@ npm run dev
 3. 点击“查询交易”，等待链上数据和 AI 解读返回。
 4. 查看交易概览、风险评估和人工确认清单。
 5. 复制 Markdown 学习记录，保存到 GitHub repo 或个人笔记。
+
+## 常用命令
+
+```bash
+npm run dev
+npm run typecheck
+npm run lint
+npm run build
+```
 
 ## 环境变量
 

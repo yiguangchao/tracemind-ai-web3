@@ -11,6 +11,25 @@ const initialTransaction: TransactionSummary | null = null;
 const initialRisk: RiskResult | null = null;
 const initialExplanation: AiExplanationResult | null = null;
 
+function buildFallbackExplanation(
+  transaction: TransactionSummary,
+  risk: RiskResult,
+): AiExplanationResult {
+  const actionParts = [
+    risk.flags.hasValueTransfer ? '包含原生 ETH 转账' : '未发现原生 ETH 转账',
+    risk.flags.isContractDeployment ? '可能是合约部署交易' : null,
+    risk.flags.isContractCall ? '包含合约调用数据' : '未发现合约调用数据',
+    risk.flags.hasLogs ? '产生了事件日志' : '未发现事件日志',
+  ].filter(Boolean);
+
+  return {
+    summary: `这是一笔发生在 ${transaction.network} 上的交易，状态为 ${transaction.status}。规则检查显示：${actionParts.join('，')}。`,
+    riskTip: `${risk.title} ${risk.reasons.join(' ') || '请在区块浏览器中继续核对交易细节。'}`,
+    confirmationChecklist: risk.humanChecklist,
+    learningNotes: '本条记录由本地规则生成，可用于没有配置 AI Key 时的学习记录。AI 解释仅是辅助，最终仍应以链上数据和人工核对为准。',
+  };
+}
+
 export default function HomePage() {
   const [transaction, setTransaction] = useState<TransactionSummary | null>(initialTransaction);
   const [risk, setRisk] = useState<RiskResult | null>(initialRisk);
@@ -52,6 +71,7 @@ export default function HomePage() {
         setExplanation(explainData.explanation);
       } catch (aiRequestError) {
         setAiError(aiRequestError instanceof Error ? aiRequestError.message : 'AI 解读暂不可用');
+        setExplanation(buildFallbackExplanation(txData.transaction, txData.risk));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '未知错误');
