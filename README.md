@@ -64,6 +64,12 @@ npm run lint
 npm run build
 ```
 
+## 部署与 CI
+
+- 推荐部署平台：Vercel
+- 部署文档：`docs/DEPLOYMENT.md`
+- GitHub Actions：提交到 `main` / `master` 后自动运行类型检查、Lint 和构建
+
 ## 环境变量
 
 | 变量 | 说明 |
@@ -81,6 +87,7 @@ npm run build
 - `src/types`：类型定义
 - `docs`：需求与技术设计文档
 - `prompts`：AI prompt 模板
+- `.github/workflows`：GitHub Actions 自动检查配置
 
 ## 安全说明
 
