@@ -5,6 +5,7 @@ AI Web3 Transaction Explainer 是一个面向 Web3 新手和 AI × Web3 学员�
 ## 主要功能
 
 - 支持输入交易哈希并查询 Sepolia / Base Sepolia 链上交易信息
+- 内置示例交易库，可一键填入普通交易、合约调用、合约部署、失败交易和 approve 授权示例
 - 展示交易状态、发送方、接收方、ETH 值、Gas、区块高度、日志数量、合约地址与 input data
 - 提供区块浏览器链接，并支持复制交易哈希和地址
 - 通过 AI 生成中文解释和风险提示
@@ -49,7 +50,7 @@ npm run dev
 
 ## 使用方法
 
-1. 在首页选择测试网，例如 Sepolia 或 Base Sepolia。
+1. 在首页选择一个示例交易，或手动选择 Sepolia / Base Sepolia。
 2. 输入 0x 开头的 66 位交易哈希。
 3. 点击“查询交易”，等待链上数据和 AI 解读返回。
 4. 查看交易概览、风险评估和人工确认清单。
@@ -68,6 +69,7 @@ npm run build
 
 - 推荐部署平台：Vercel
 - 部署文档：`docs/DEPLOYMENT.md`
+- 提交检查清单：`docs/SUBMISSION_CHECKLIST.md`
 - GitHub Actions：提交到 `main` / `master` 后自动运行类型检查、Lint 和构建
 
 ## 环境变量
@@ -102,3 +104,9 @@ npm run build
 - 增加 ABI 输入与 input data 解码
 - 增加钱包连接，只用于展示当前地址
 - 增加本地历史记录和 PDF 导出
+
+## 三天功能计划
+
+项目后续三天迭代计划见 `docs/THREE_DAY_FEATURE_PLAN.md`，重点包括示例交易库、本地历史记录、风险解释增强和 Markdown 交付打磨。
+
+当前已完成 Day 1：示例交易库。
