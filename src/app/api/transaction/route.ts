@@ -2,16 +2,15 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/viemClient';
 import { formatTransactionSummary } from '@/lib/transaction';
 import { calculateRisk } from '@/lib/riskCheck';
-import { isValidTransactionHash } from '@/lib/validators';
-import type { SupportedNetwork } from '@/lib/chains';
+import { isSupportedNetwork, isValidTransactionHash } from '@/lib/validators';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const network = url.searchParams.get('network') as SupportedNetwork | null;
+  const network = url.searchParams.get('network') ?? '';
   const hash = url.searchParams.get('hash') ?? '';
 
-  if (!network) {
-    return NextResponse.json({ error: '缺少网络参数' }, { status: 400 });
+  if (!isSupportedNetwork(network)) {
+    return NextResponse.json({ error: '当前网络暂不支持' }, { status: 400 });
   }
 
   if (!isValidTransactionHash(hash)) {

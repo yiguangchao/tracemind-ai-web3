@@ -11,7 +11,7 @@ export interface TransactionSummary {
   valueEth: string;
   input: string;
   functionSelector: string | null;
-  blockNumber: number | null;
+  blockNumber: string | null;
   gas: string | null;
   gasUsed: string | null;
   effectiveGasPrice: string | null;

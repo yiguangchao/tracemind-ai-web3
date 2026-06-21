@@ -1,12 +1,19 @@
 import { formatEther } from 'viem';
 import type { TransactionSummary } from '@/types/transaction';
-import { supportedChains } from './chains';
+import { supportedChains, type SupportedNetwork } from './chains';
 
-export function formatTransactionSummary(transaction: any, receipt: any, network: string): TransactionSummary {
+export function formatTransactionSummary(transaction: any, receipt: any, network: SupportedNetwork): TransactionSummary {
   const chain = supportedChains[network];
   const valueEth = transaction.value ? formatEther(transaction.value) : '0';
-  const selector = transaction.input?.slice(0, 10) || null;
-  const status = receipt?.status === 1 ? 'success' : receipt?.status === 0 ? 'reverted' : transaction.blockNumber ? 'unknown' : 'pending';
+  const input = transaction.input ?? '0x';
+  const selector = input !== '0x' ? input.slice(0, 10) : null;
+  const status = receipt?.status === 'success'
+    ? 'success'
+    : receipt?.status === 'reverted'
+      ? 'reverted'
+      : transaction.blockNumber
+        ? 'unknown'
+        : 'pending';
 
   return {
     network: chain.name,
@@ -16,9 +23,9 @@ export function formatTransactionSummary(transaction: any, receipt: any, network
     from: transaction.from,
     to: transaction.to,
     valueEth,
-    input: transaction.input,
+    input,
     functionSelector: selector,
-    blockNumber: transaction.blockNumber ?? null,
+    blockNumber: transaction.blockNumber?.toString() ?? null,
     gas: transaction.gas?.toString() ?? null,
     gasUsed: receipt?.gasUsed?.toString() ?? null,
     effectiveGasPrice: receipt?.effectiveGasPrice ? receipt.effectiveGasPrice.toString() : null,
